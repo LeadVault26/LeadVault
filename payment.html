@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | LeadVault</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 2rem; color: #fff; }
+        .order-box {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #2a2a4a;
+        }
+        .product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #2a2a4a;
+        }
+        .product-name { font-size: 1.2rem; font-weight: 600; }
+        .product-price { font-size: 1.5rem; color: #667eea; font-weight: bold; }
+        .total {
+            padding: 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+        }
+        .total-price { color: #667eea; font-weight: bold; }
+        .payment-section { margin-top: 2rem; }
+        .payment-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+        .payment-option {
+            background: #0f0f1a;
+            border: 2px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .payment-option:hover { border-color: #667eea; }
+        .payment-option.selected { border-color: #667eea; background: #16213e; }
+        .payment-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .payment-icon { font-size: 1.5rem; }
+        .payment-details { margin-top: 1rem; padding: 1rem; background: #1a1a2e; border-radius: 8px; }
+        .crypto-address {
+            background: #0d0d1a;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+            color: #4ade80;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .skrill-btn {
+            display: inline-block;
+            background: #ff6600;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        .form-group { margin-top: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #888; }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            background: #0f0f1a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .submit-section { margin-top: 2rem; text-align: center; }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-submit:hover { transform: scale(1.05); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+        .instructions {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #16213e;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        .instructions h3 { color: #667eea; margin-bottom: 1rem; }
+        .instructions ol { padding-left: 1.5rem; color: #ccc; }
+        .instructions li { margin: 0.5rem 0; }
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .success-content {
+            background: #1a1a2e;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+        }
+        .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .success-content h2 { color: #4ade80; margin-bottom: 1rem; }
+        .success-content p { color: #888; margin-bottom: 1.5rem; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Checkout</h1>
+        
+        <div class="order-box">
+            <div class="product">
+                <span class="product-name">Business Leads Pack</span>
+                <span class="product-price">$97</span>
+            </div>
+            
+            <div class="total">
+                <span>Total</span>
+                <span class="total-price">$97</span>
+            </div>
+
+            <div class="form-group">
+                <label for="email">📧 Your Email (for delivery)</label>
+                <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="payment-section">
+                <div class="payment-title">Select Payment Method:</div>
+                
+                <div class="payment-option" id="bitcoin-option" onclick="selectPayment('bitcoin')">
+                    <div class="payment-header">
+                        <span class="payment-icon">₿</span>
+                        <span>Bitcoin</span>
+                    </div>
+                </div>
+
+                <div class="payment-option" id="bitcoin-details" class="hidden">
+                    <div class="payment-details">
+                        <p>Send exactly <strong style="color:#667eea">$97 USD</strong> in Bitcoin to this address:</p>
+                        <div class="crypto-address">3MSanitQQw4ZRC1AxnbZg9wMcx26qtax41</div>
+                        <p style="margin-top:1rem; color:#888; font-size:0.85rem">
+                            After sending, email your transaction ID to <strong>kaattyga@gmail.com</strong> with subject "Payment Confirmation" and your email used at checkout.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="payment-option" id="skrill-option" onclick="selectPayment('skrill')">
+                    <div class="payment-header">
+                        <span class="payment-icon">💳</span>
+                        <span>Skrill</span>
+                    </div>
+                </div>
+
+                <div class="payment-option hidden" id="skrill-details">
+                    <div class="payment-details">
+                        <p>Send <strong style="color:#667eea">$97</strong> to:</p>
+                        <p style="font-size:1.2rem; margin-top:0.5rem"><strong>kaattyga@gmail.com</strong></p>
+                        <a href="https://www.skrill.com/pay/instant" target="_blank" class="skrill-btn">Pay with Skrill →</a>
+                        <p style="margin-top:1rem; color:#888; font-size:0.85rem">
+                            After payment, email your Skrill transaction ID to <strong>kaattyga@gmail.com</strong> with subject "Payment Confirmation" and your email used at checkout.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button class="btn-submit" id="confirm-btn" onclick="confirmOrder()">Confirm Order</button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 How It Works</h3>
+            <ol>
+                <li>Enter your email above for delivery</li>
+                <li>Choose Bitcoin or Skrill payment</li>
+                <li>Click the payment button/link to complete payment</li>
+                <li>Email your transaction ID to kaattyga@gmail.com</li>
+                <li>Receive your leads CSV file within 24 hours</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let selectedPayment = null;
+
+        function selectPayment(method) {
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById(method + '-option').classList.add('selected');
+            document.getElementById('bitcoin-details').classList.add('hidden');
+            document.getElementById('skrill-details').classList.add('hidden');
+            document.getElementById(method + '-details').classList.remove('hidden');
+            selectedPayment = method;
+        }
+
+        function confirmOrder() {
+            const email = document.getElementById('email').value;
+            if (!email) {
+                alert('Please enter your email address');
+                return;
+            }
+            if (!selectedPayment) {
+                alert('Please select a payment method');
+                return;
+            }
+            
+            const message = `NEW ORDER\n\nEmail: ${email}\nProduct: Business Leads Pack - $97\nPayment Method: ${selectedPayment.toUpperCase()}\n\nWaiting for payment confirmation.`;
+            
+            // Create mailto link
+            const subject = encodeURIComponent('New Lead Order - ' + email);
+            const body = encodeURIComponent(message);
+            window.location.href = `mailto:kaattyga@gmail.com?subject=${subject}&body=${body}`;
+            
+            alert('📧 A confirmation email will open. Please send it to complete your order. Payment instructions have been included.');
+        }
+    </script>
+</body>
+</html>
